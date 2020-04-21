@@ -5,3 +5,5 @@ Joe Patton
 Zachary Wenz
 Jesse Kowalcic
 Ahmed Abouhashem
+
+Using Machine Learning to Detect Signs of Depression from Reddit Users
