@@ -3,9 +3,74 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>This is not the Title</title>
+    <title>Dummy ml app</title>
+    <!-- Load d3.js -->
+    <script src="https://d3js.org/d3.v4.js"></script>
+
+
+
+
+
+    <style>
+        form {
+            margin: auto;
+            width: 90%;
+        }
+        .result {
+            margin: auto;
+            width: 90%;
+            border: 1px solid #ccc;
+        }
+        </style>
+
+
+
+
 </head>
 <body>
     
+    <form action="{{ url_for('whatever') }}" method="POST">
+        <fieldset>
+            <legend>Input values:</legend>
+            <!-- Temperature:
+            <input name="temperature" type="number" required>
+            <br> -->
+            <br> Text:
+            <input id = 'text_box' name="text" type="text" required>
+            
+            <input type="button" value="Cobain" name="Cobain" onclick="populateTextarea()"></input>
+            <br>
+            <!-- <br> Windspeed:
+            <input name="windspeed" type="number" required>
+            <br> -->
+            <br>
+            <input type="submit">
+        </fieldset>
+    </form>
+    <br>
+    <div class="result" >
+        <!-- {% if result %}
+            {% for variable, value in original_input.items() %}
+                <b>{{ variable }}</b> :  {{ value }} 
+            {% endfor %} -->
+            
+            <br> Text: 
+               <p style="font-size:25px;"> {{ words }}</p>
+               <button onClick="highlightPWords()">highlight pronouns</button>
+               <button onClick="highlightAWords()">highlight absolutist</button>
+            <br> Predicted number:
+               <p style="font-size:50px">{{ result }}</p>
+               <br> Absolutist Index:
+               <p style="font-size:25px">{{ absolutist }}</p>
+               <br> Sentiment Score:
+               <p style="font-size:25px">{{ sentiment }}</p>
+               <br> 1st Person Singular Pronoun Count:
+               <p style="font-size:25px">{{ pronouns }}</p>
+            <br>
+        <!--{% endif %}-->
+    </div>
+
 </body>
+<script type = "text/javascript" src="static/highlighter.js"></script>
+
 </html>
