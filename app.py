@@ -22,10 +22,10 @@ from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 
 
 # Use pickle to load in the pre-trained model.
-with open(r'C:\My-repo\Data_Final\dummy_model_2.pkl', 'rb') as f:
+with open('dummy_model_2.pkl', 'rb') as f:
     model = pickle.load(f)
 
-with open(r'C:\My-repo\Data_Final\vectorizer.pkl', 'rb') as v:
+with open('vectorizer.pkl', 'rb') as v:
     vectorizer = pickle.load(v)
 
 def personal_pronouns(text1):
