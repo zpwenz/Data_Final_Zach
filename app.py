@@ -4,7 +4,7 @@ import pickle
 from sklearn import model_selection, preprocessing, linear_model, naive_bayes, metrics, svm
 from sklearn.feature_extraction.text import TfidfVectorizer, CountVectorizer
 from sklearn import decomposition, ensemble
-import pandas, xgboost, numpy, textblob, string
+import xgboost, numpy, textblob, string
 from keras.preprocessing import text, sequence
 from keras import layers, models, optimizers
 import spacy
@@ -12,7 +12,6 @@ nlp = spacy.load("en_core_web_sm")
 import en_core_web_sm
 from absolang import absolutist, absolutist_index
 import re, string
-import nltk
 import inflect
 from nltk import word_tokenize, sent_tokenize
 import unicodedata
