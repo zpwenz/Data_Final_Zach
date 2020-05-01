@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dummy ml app</title>
+    <title>Depression Indicator  </title>
     <!-- Load d3.js -->
     <script src="https://d3js.org/d3.v4.js"></script>
 
@@ -32,27 +32,20 @@
     <form action="{{ url_for('whatever') }}" method="POST">
         <fieldset>
             <legend>Input values:</legend>
-            <!-- Temperature:
-            <input name="temperature" type="number" required>
-            <br> -->
+           
             <br> Text:
             <input id = 'text_box' name="text" type="text" required>
             
             <input type="button" value="Cobain" name="Cobain" onclick="populateTextarea()"></input>
             <br>
-            <!-- <br> Windspeed:
-            <input name="windspeed" type="number" required>
-            <br> -->
+           
             <br>
             <input type="submit">
         </fieldset>
     </form>
     <br>
     <div class="result" >
-        <!-- {% if result %}
-            {% for variable, value in original_input.items() %}
-                <b>{{ variable }}</b> :  {{ value }} 
-            {% endfor %} -->
+        
             
             <br> Text: 
                <p style="font-size:25px;"> {{ words }}</p>
@@ -67,7 +60,6 @@
                <br> 1st Person Singular Pronoun Count:
                <p style="font-size:25px">{{ pronouns }}</p>
             <br>
-        <!--{% endif %}-->
     </div>
 
 </body>
