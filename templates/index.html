@@ -5,10 +5,22 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Depression Indicator  </title>
     <!-- Load d3.js -->
-    <script src="https://d3js.org/d3.v4.js"></script>
-
-<link href="../static/css/style.css" rel="stylesheet" type="text/css">
+    <script src="https://d3js.org/d3.v3.js"></script>
+    <script type="text/javascript" src="http://code.jquery.com/jquery-1.7.1.min.js"></script>
+    <script type="text/javascript" src="https://raw.githubusercontent.com/umadjoe440/Data_Final/master/sentiment_words.json"></script>
+    <style type="text/css">
+    text {
+        font: 10px sans-serif;
+}
+    circle {
+        stroke: #565352;
+        stroke-width: 1;
+}
+</style>
 </head>
+<script>
+    var wordarray = JSON.parse('{{ data | safe}}')
+</script>
 <body>
     
     <form action="{{ url_for('whatever') }}" method="POST">
@@ -16,9 +28,10 @@
             <legend>Input values:</legend>
            
             <br> Text:
-            <input id = "text_box" name="text" type="text" required>
+
+            <input id = 'text_box' name="text" type="text" required>
             
-            <input type="button" value="Cobain" name="Cobain" onclick="populateTextarea()"> </input>
+            <input type="button" value="Cobain" name="Cobain" onclick="populateTextarea()"></input>
             <br>
            
             <br>
@@ -26,6 +39,8 @@
         </fieldset>
     </form>
     <br>
+    <script>
+    </script>
     <div class="result" >
         
             
@@ -33,6 +48,7 @@
                <p style="font-size:25px;"> {{ words }}</p>
                <button onClick="highlightPWords()">highlight pronouns</button>
                <button onClick="highlightAWords()">highlight absolutist</button>
+               <button onClick="highlightSWords()">highlight sentiment</button>
             <br> Predicted number:
                <p style="font-size:50px">{{ result }}</p>
                <br> Absolutist Index:
@@ -44,7 +60,12 @@
             <br>
     </div>
 
+<!-- Create a div where the graph will take place -->
+<div id="my_dataviz"></div>
+
 </body>
-<script type = "text/javascript" src="../static/highlighter.js"></script>
+<script type = "text/javascript" src="/static/highlighter.js"></script>
+<script type = "text/javascript" src="/static/sentiment_highlighter.js"></script>
+<script type = "text/javascript" src="/static/sentiment_chart.js"></script>
 
 </html>
