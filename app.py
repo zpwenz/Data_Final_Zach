@@ -16,8 +16,19 @@ import re, string
 import inflect
 from nltk import word_tokenize, sent_tokenize
 import unicodedata
-import spacy
-from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer 
+from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
+import nltk
+nltk.download('punkt')
+from nltk.tokenize import word_tokenize
+from collections import Counter
+import json
+
+afinn_wl_url = ('https://raw.githubusercontent.com'
+                '/fnielsen/afinn/master/afinn/data/AFINN-111.txt')
+sentiments = pd.read_csv(afinn_wl_url,
+                          header=None, # no column names
+                          sep='\t',  # tab sepeated
+                          names=['term', 'value']) #new column names
 
 
 
@@ -52,6 +63,35 @@ def replace_contractions(text):
     """Replace contractions in string of text"""
     return contractions.fix(text)
 
+def tfs_dict(text):
+    a_list = nltk.tokenize.sent_tokenize(text)
+    sall = []
+    for sentence in a_list:
+        term = "I" #term we want to search for
+        words = sentence.split() #split the sentence into individual words
+        if term in words:
+            replace_contractions(sentence)
+            doc=nlp(sentence)
+            sall.append(doc)
+    verbs = []
+    for sentence in sall:
+        s_tokens = [token.lower_ for token in sentence] #if (token.pos_ == "VERB")]
+        verbs.append(s_tokens)
+    verb_list = [item for sublist in verbs for item in sublist]
+    c = Counter(verb_list)
+    words_f = [([w, c.get(w, 0)]) for w in sentiments["term"].tolist()]
+    s_words = list(filter(lambda x: x[1] != 0, words_f))
+    tf = pd.DataFrame(s_words, columns = ["term", "frequency"])
+    tfv = tf.merge(sentiments)
+    colors = []
+    for value in tfv['value']:
+        if value > 0:
+            colors.append("positive")
+        else:
+            colors.append("negative")
+    tfv["group"] = colors
+    return tfv.to_dict('records')
+
 app = Flask(__name__)
 
 # Main home page
@@ -68,8 +108,6 @@ def whatever():
         text1 = [textc]
         text2 = to_lowercase(text1)
         text3 = str(text2)
-
-        
         inputvector =  vectorizer.transform(text1)
         prediction = model.predict_proba(inputvector)[0][1]
         absolutist = absolutist_index(text3)
@@ -78,11 +116,10 @@ def whatever():
         return render_template('index.html',
                                      original_input={'Text':text3},
                                      words = textc,
-                                     result=prediction, absolutist = absolutist, sentiment = sentiments, pronouns = pronoun
+                                     result=prediction, absolutist = absolutist, sentiment = sentiments, pronouns = pronoun,
+                                     data = json.dumps(tfs_dict(text))
                                      )
-
-
-
+        
 
 if __name__ == "__main__":
     app.run(debug=True)
