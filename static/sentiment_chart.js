@@ -70,7 +70,8 @@ node.append("circle")
 node.append("text")
       .attr("dy", ".3em")
       .style("text-anchor", "middle")
-      .text(function(d) { return d.text.substring(0, d.radius / 3); });
+      .text(function(d) { return d.text.substring(0, d.radius / 3); })
+      .style("font-size", function(d) { return (d.radius/2) - 3 + "px"; });
 
 
 
