@@ -40,9 +40,6 @@ joblib==0.14.1
 jsonschema==3.2.0
 jupyter-client==6.1.2
 jupyter-core==4.6.3
-Keras==2.3.1
-Keras-Applications==1.0.8
-Keras-Preprocessing==1.1.0
 lazy-object-proxy==1.4.3
 Markdown==3.2.1
 MarkupSafe==1.1.1
@@ -86,9 +83,6 @@ six==1.14.0
 sklearn==0.0
 https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-2.2.5/en_core_web_sm-2.2.5.tar.gz#egg=en_core_web_sm
 srsly==1.0.2
-tensorboard==2.1.1
-tensorflow==2.1.0
-tensorflow-estimator==2.1.0
 termcolor==1.1.0
 textblob==0.15.3
 textsearch==0.0.17
@@ -106,5 +100,4 @@ wheel
 win-inet-pton==1.1.0
 wincertstore==0.2
 wrapt==1.12.1
-xgboost==1.0.2
 zipp==3.1.0
