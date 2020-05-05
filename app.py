@@ -5,9 +5,9 @@ import pickle
 from sklearn import model_selection, preprocessing, linear_model, naive_bayes, metrics, svm
 from sklearn.feature_extraction.text import TfidfVectorizer, CountVectorizer
 from sklearn import decomposition, ensemble
-import xgboost, numpy, textblob, string
-from keras.preprocessing import text, sequence
-from keras import layers, models, optimizers
+import numpy, textblob, string
+#from keras.preprocessing import text, sequence
+#from keras import layers, models, optimizers
 import spacy
 nlp = spacy.load("en_core_web_sm")
 import en_core_web_sm
@@ -22,6 +22,8 @@ nltk.download('punkt')
 from nltk.tokenize import word_tokenize
 from collections import Counter
 import json
+import statistics
+import numpy as np
 
 afinn_wl_url = ('https://raw.githubusercontent.com'
                 '/fnielsen/afinn/master/afinn/data/AFINN-111.txt')
@@ -33,11 +35,11 @@ sentiments = pd.read_csv(afinn_wl_url,
 
 
 # Use pickle to load in the pre-trained model.
-with open('dummy_model_2.pkl', 'rb') as f:
+with open('linear_classifier.pkl', 'rb') as f:
     model = pickle.load(f)
 
-with open('vectorizer.pkl', 'rb') as v:
-    vectorizer = pickle.load(v)
+with open('scaler.pkl', 'rb') as v:
+    scaler = pickle.load(v)
 
 def personal_pronouns(text1):
     pronouns = ["i", "me", "my", "mine", "myself"]
@@ -63,6 +65,58 @@ def replace_contractions(text):
     """Replace contractions in string of text"""
     return contractions.fix(text)
 
+fatigue_list = ['fatigued', 'weary', 'bored', 'tired', 'tiring', 'frustrated', 'irritated', 'annoyed', 'antsy', 'tiresome', 'impatient', 'exhausted', 'jaded', 'sick', 'lazy', 'knackered', 'winded', 'restless', 'accustomed', 'exasperated', 'stale', 'cranky', 'discombobulated', 'dizzy', 'grumpy', 'lethargic', 'disgusted', 'scared', 'disheartened', 'wearying', 'confused', 'mad', 'emotionally_drained', 'Exhausted', 'flustered', 'nauseated', 'disillusioned', 'jet_lagged', 'disenchanted', 'frazzled', 'pooped', 'fond', 'angry', 'groggy', 'numb', 'nervous', 'bewildered', 'haggard', 'complaining', 'peeved', 'grouchy', 'anxious', 'boring', 'demoralized', 'nauseous', 'crabby', 'bummed', 'bothered', 'despondent', 'irritable', 'psyched', 'discouraged', 'dehydrated', 'Weary', 'dreading', 'overworked', 'worried', 'dejected', 'pissed', 'embarrassed', 'whining', 'angrier', 'afraid', 'rusty', 'crazy', 'ashamed', 'anymore', 'exhausting', 'feeling', 'excuses', 'monotonous', 'distracted', 'dazed', 'ragged', 'sleep_deprived', 'homesick', 'stupid', 'silly', 'frustrating', 'dispirited', 'downcast', 'hungover', 'apathetic', "'m", 'lackadaisical', 'disoriented', 'agitated', 'wishy_washy', 'mentally', 'wearily']
+pos_family = {
+    'noun' : ['NN','NNS','NNP','NNPS'],
+    'pron' : ['PRP','PRP$','WP','WP$'],
+    'verb' : ['VB','VBD','VBG','VBN','VBP','VBZ'],
+    'adj' :  ['JJ','JJR','JJS'],
+    'adv' : ['RB','RBR','RBS','WRB']
+}
+
+# function to check and get the part of speech tag count of a words in a given sentence
+def check_pos_tag(x, flag):
+    cnt = 0
+    try:
+        wiki = textblob.TextBlob(x)
+        for tup in wiki.tags:
+            ppo = list(tup)[1]
+            if ppo in pos_family[flag]:
+                cnt += 1
+    except:
+        pass
+    return cnt
+
+def sentiment_score(text): 
+  
+    # Create a SentimentIntensityAnalyzer object. 
+    sid_obj = SentimentIntensityAnalyzer() 
+    sentences = nltk.tokenize.sent_tokenize(text)
+    scores = []
+    for sentence in sentences:
+        scores.append((sid_obj.polarity_scores(sentence)).get('compound'))
+
+    # polarity_scores method of SentimentIntensityAnalyzer 
+    # oject gives a sentiment dictionary. 
+    # which contains pos, neg, neu, and compound scores. 
+    return(statistics.mean(scores))
+def pronomialization(text):
+    noun_count = check_pos_tag(text, 'noun')
+    return(personal_pronouns(text) / noun_count)
+
+def fatigue_ratio(text):
+    counts = []
+    for word in fatigue_list:
+        counts.append(text.count(word))
+    return(sum(counts)/len(text.split()))
+
+def get_features(text):
+    S = sentiment_score(text)
+    P = pronomialization(text)
+    A = absolutist_index(text)
+    F = fatigue_ratio(text)
+    return(np.array([S, P, A, F]))
+
 def tfs_dict(text):
     a_list = nltk.tokenize.sent_tokenize(text)
     sall = []
@@ -75,7 +129,7 @@ def tfs_dict(text):
             sall.append(doc)
     verbs = []
     for sentence in sall:
-        s_tokens = [token.lower_ for token in sentence] #if (token.pos_ == "VERB")]
+        s_tokens = [token.lower_ for token in sentence]
         verbs.append(s_tokens)
     verb_list = [item for sublist in verbs for item in sublist]
     c = Counter(verb_list)
@@ -108,15 +162,18 @@ def whatever():
         text1 = [textc]
         text2 = to_lowercase(text1)
         text3 = str(text2)
-        inputvector =  vectorizer.transform(text1)
+        inputvector =  get_features(textc)
+        inputvector = np.array(inputvector.reshape(1,-1))
+        inputvector = scaler.transform(inputvector)
         prediction = model.predict_proba(inputvector)[0][1]
         absolutist = absolutist_index(text3)
-        sentiments = SentimentIntensityAnalyzer().polarity_scores(text3).get('compound')
-        pronoun = personal_pronouns(text3)
+        sentiments = sentiment_score(text)
+        fatigue = fatigue_ratio(text)
+        pronoun = pronomialization(text3)
         return render_template('index.html',
                                      original_input={'Text':text3},
                                      words = textc,
-                                     result=prediction, absolutist = absolutist, sentiment = sentiments, pronouns = pronoun,
+                                     result=prediction, absolutist = absolutist, sentiment = sentiments, pronouns = pronoun, fatigue = fatigue,
                                      data = json.dumps(tfs_dict(text))
                                      )
         

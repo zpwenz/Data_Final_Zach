@@ -66,6 +66,9 @@ node.append("circle")
     return color(d.value);
     })
     .attr("r", function(d){return d.radius})
+    .style("stroke-opacity", .5)
+    .style("stroke-width", 5) 
+    .style("stroke", "grey")
     
 node.append("text")
       .attr("dy", ".3em")
